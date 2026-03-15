@@ -1,8 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import Axios from "axios";
 
-export default function ProductList({ products, setProducts, API_URL }) {
+export default function ProductList({
+    products,
+    setProducts,
+    API_URL,
+    filter,
+}) {
     const [showForm, setShowForm] = useState(false);
     const [editId, setEditId] = useState(null);
     const [formData, setFormData] = useState({
@@ -14,6 +19,9 @@ export default function ProductList({ products, setProducts, API_URL }) {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+    const [sort, setSort] = useState("");
+    const [showSortOptions, setShowSortOptions] = useState(false);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -42,6 +50,37 @@ export default function ProductList({ products, setProducts, API_URL }) {
                 .catch((err) => console.error("Error searching products", err));
         }
     }, [debouncedSearch]);
+
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === "Escape") {
+                setShowForm(false);
+                setShowSortOptions(false);
+                setEditId(null);
+            }
+        };
+        window.addEventListener("keydown", handleEsc);
+        return () => {
+            window.removeEventListener("keydown", handleEsc);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
+                setShowSortOptions(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const handleAddButtonClick = () => {
         setShowForm(true);
@@ -144,11 +183,39 @@ export default function ProductList({ products, setProducts, API_URL }) {
         );
     };
 
+    let filteredProducts = products;
+    if (filter === "lowStock") {
+        filteredProducts = products.filter((product) => product.stock < 5);
+    }
+    switch (sort) {
+        case "price":
+            filteredProducts = [...filteredProducts].sort(
+                (a, b) => a.price - b.price
+            );
+            break;
+        case "stock":
+            filteredProducts = [...filteredProducts].sort(
+                (a, b) => a.stock - b.stock
+            );
+            break;
+        case "title":
+            filteredProducts = [...filteredProducts].sort((a, b) =>
+                a.title.localeCompare(b.title)
+            );
+            break;
+    }
+
     return (
         <>
             {showForm && (
-                <div className="fixed inset-0 bg-black/3 backdrop-blur-sm flex items-center justify-center z-50 ">
-                    <div className=" p-6 rounded-2xl shadow-2xl w-96  backdrop-blur-xl bg-white/30">
+                <div
+                    onClick={() => setShowForm(false)}
+                    className="fixed inset-0 bg-black/3 backdrop-blur-sm flex items-center justify-center z-50 "
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className=" p-6 rounded-2xl shadow-2xl w-96  backdrop-blur-xl bg-white/30"
+                    >
                         <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4">
                             {editId ? "Edit Product" : "Add Product"}
                         </h2>
@@ -208,7 +275,9 @@ export default function ProductList({ products, setProducts, API_URL }) {
 
             <div className="flex justify-around items-center m-6 rounded bg-slate-100 dark:bg-slate-900">
                 <div className="text-2xl text-slate-700 dark:text-slate-200 font-bold m-2">
-                    Inventory Table
+                    {filter === "lowStock"
+                        ? "Low Stock Products"
+                        : "Total Products"}
                 </div>
                 <div>
                     <input
@@ -216,9 +285,63 @@ export default function ProductList({ products, setProducts, API_URL }) {
                         placeholder="Search products..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="border p-3 w-96 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="border p-3   rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                 </div>
+
+                <div ref={dropdownRef} className="relative">
+                    <button
+                        onClick={() => setShowSortOptions(!showSortOptions)}
+                        className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
+                    >
+                        Sort ({""}
+                        {sort
+                            ? sort.charAt(0).toUpperCase() + sort.slice(1)
+                            : "Default"}
+                        )
+                    </button>
+                    {showSortOptions && (
+                        <div className="absolute right-0 mt-2 w-24 bg-white dark:bg-slate-700 rounded-lg shadow-lg">
+                            <button
+                                onClick={() => {
+                                    setSort("");
+                                    setShowSortOptions(false);
+                                }}
+                                className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
+                            >
+                                Default
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setSort("price");
+                                    setShowSortOptions(false);
+                                }}
+                                className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
+                            >
+                                Price
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setSort("stock");
+                                    setShowSortOptions(false);
+                                }}
+                                className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
+                            >
+                                Stock
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setSort("title");
+                                    setShowSortOptions(false);
+                                }}
+                                className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
+                            >
+                                Title
+                            </button>
+                        </div>
+                    )}
+                </div>
+
                 <button
                     onClick={handleAddButtonClick}
                     className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
@@ -229,7 +352,7 @@ export default function ProductList({ products, setProducts, API_URL }) {
             <table className="w-full bg-white dark:bg-slate-800 rounded-xl overflow-hidden dark:text-white ">
                 <thead className="bg-slate-200 dark:bg-slate-700 h-12 text-slate-800 dark:text-slate-100">
                     <tr>
-                        <th>Product Details</th>
+                        <th>Title</th>
                         <th>SKU</th>
                         <th>Price</th>
                         <th>Quantity</th>
@@ -237,14 +360,14 @@ export default function ProductList({ products, setProducts, API_URL }) {
                     </tr>
                 </thead>
                 <tbody className=" h-15">
-                    {products.length === 0 ? (
+                    {filteredProducts.length === 0 ? (
                         <tr>
                             <td colSpan="5" className="text-center p-4">
                                 No products found
                             </td>
                         </tr>
                     ) : (
-                        products.map((product) => (
+                        filteredProducts.map((product) => (
                             <tr
                                 key={product.id}
                                 className="text-center hover:bg-slate-100 dark:hover:bg-slate-700 transition"
