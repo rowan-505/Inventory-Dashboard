@@ -16,7 +16,7 @@ export default function Summary({ products = [], setFilter }) {
                 Inventory Overview
             </h1>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4 ">
                 <div
                     onClick={() => setFilter("all")}
                     className="flex gap-4  items-center justify-between p-6 text-center bg-blue-200  dark:bg-slate-800 dark:text-slate-200 rounded-2xl shadow hover:shadow-lg transition"

@@ -6,11 +6,11 @@ export default function Navbar() {
 
     return (
         <div className="flex items-center justify-between px-5 py-10 dark:bg-slate-800 rounded-xl">
-            <h1 className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 ">
+            <h1 className="text-4xl sm:text-5xl font-bold text-indigo-600 dark:text-indigo-400 ">
                 Store Dashboard
             </h1>
             <button
-                className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition
+                className="bg-indigo-500 hover:bg-indigo-600 sm:text-sm text-white px-4 py-2 rounded-lg transition
 "
                 onClick={toggleTheme}
             >

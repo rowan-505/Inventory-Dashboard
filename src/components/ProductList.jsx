@@ -273,8 +273,8 @@ export default function ProductList({
                 </div>
             )}
 
-            <div className="flex justify-around items-center m-6 rounded bg-slate-100 dark:bg-slate-900">
-                <div className="text-2xl text-slate-700 dark:text-slate-200 font-bold m-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 justify-around items-center m-6 rounded bg-slate-100 dark:bg-slate-900">
+                <div className="text-xl sm:text-2xl text-slate-700 dark:text-slate-200 font-bold m-2">
                     {filter === "lowStock"
                         ? "Low Stock Products"
                         : "Total Products"}
@@ -285,120 +285,124 @@ export default function ProductList({
                         placeholder="Search products..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="border p-3   rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="border w-full p-3 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                 </div>
 
-                <div ref={dropdownRef} className="relative">
-                    <button
-                        onClick={() => setShowSortOptions(!showSortOptions)}
-                        className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
-                    >
-                        Sort ({""}
-                        {sort
-                            ? sort.charAt(0).toUpperCase() + sort.slice(1)
-                            : "Default"}
-                        )
-                    </button>
-                    {showSortOptions && (
-                        <div className="absolute right-0 mt-2 w-24 bg-white dark:bg-slate-700 rounded-lg shadow-lg">
-                            <button
-                                onClick={() => {
-                                    setSort("");
-                                    setShowSortOptions(false);
-                                }}
-                                className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
-                            >
-                                Default
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setSort("price");
-                                    setShowSortOptions(false);
-                                }}
-                                className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
-                            >
-                                Price
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setSort("stock");
-                                    setShowSortOptions(false);
-                                }}
-                                className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
-                            >
-                                Stock
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setSort("title");
-                                    setShowSortOptions(false);
-                                }}
-                                className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
-                            >
-                                Title
-                            </button>
-                        </div>
-                    )}
-                </div>
+                <div className="flex gap-2 justify-start md:justify-end flex-wrap">
+                    <div ref={dropdownRef} className="relative">
+                        <button
+                            onClick={() => setShowSortOptions(!showSortOptions)}
+                            className="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-indigo-600 sm:px-4 sm:text-base transition"
+                        >
+                            Sort ({""}
+                            {sort
+                                ? sort.charAt(0).toUpperCase() + sort.slice(1)
+                                : "Default"}
+                            )
+                        </button>
+                        {showSortOptions && (
+                            <div className="absolute right-0 mt-2 w-24 bg-white dark:bg-slate-700 rounded-lg shadow-lg">
+                                <button
+                                    onClick={() => {
+                                        setSort("");
+                                        setShowSortOptions(false);
+                                    }}
+                                    className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Default
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setSort("price");
+                                        setShowSortOptions(false);
+                                    }}
+                                    className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Price
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setSort("stock");
+                                        setShowSortOptions(false);
+                                    }}
+                                    className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Stock
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setSort("title");
+                                        setShowSortOptions(false);
+                                    }}
+                                    className="block w-full text-left px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Title
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
-                <button
-                    onClick={handleAddButtonClick}
-                    className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
-                >
-                    Add Product
-                </button>
+                    <button
+                        onClick={handleAddButtonClick}
+                        className=" bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-indigo-600 sm:px-4 sm:text-base transition"
+                    >
+                        Add Product
+                    </button>
+                </div>
             </div>
-            <table className="w-full bg-white dark:bg-slate-800 rounded-xl overflow-hidden dark:text-white ">
-                <thead className="bg-slate-200 dark:bg-slate-700 h-12 text-slate-800 dark:text-slate-100">
-                    <tr>
-                        <th>Title</th>
-                        <th>SKU</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody className=" h-15">
-                    {filteredProducts.length === 0 ? (
+            <div className="overflow-x-auto" >
+                <table className="min-w-100 w-full  bg-white dark:bg-slate-800 rounded-xl overflow-hidden dark:text-white ">
+                    <thead className="bg-slate-200 dark:bg-slate-700 h-12 text-slate-800 dark:text-slate-100">
                         <tr>
-                            <td colSpan="5" className="text-center p-4">
-                                No products found
-                            </td>
+                            <th>Title</th>
+                            <th>SKU</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
                         </tr>
-                    ) : (
-                        filteredProducts.map((product) => (
-                            <tr
-                                key={product.id}
-                                className="text-center hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                            >
-                                <td>{product.title}</td>
-                                <td>{product.sku}</td>
-                                <td>${product.price}</td>
-                                <td>{product.stock}</td>
-                                <td>
-                                    <button
-                                        onClick={() =>
-                                            handleUpdateButtonClick(product.id)
-                                        }
-                                        className="bg-amber-500 text-white px-4 py-2 rounded-lg m-2 hover:bg-amber-600"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            handleDeleteProduct(product.id)
-                                        }
-                                        className="bg-red-500 text-white px-2 py-2 rounded-lg hover:bg-red-600"
-                                    >
-                                        Delete
-                                    </button>
+                    </thead>
+                    <tbody className=" h-15">
+                        {filteredProducts.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="text-center p-4">
+                                    No products found
                                 </td>
                             </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+                        ) : (
+                            filteredProducts.map((product) => (
+                                <tr
+                                    key={product.id}
+                                    className="text-center hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                >
+                                    <td>{product.title}</td>
+                                    <td>{product.sku}</td>
+                                    <td>${product.price}</td>
+                                    <td>{product.stock}</td>
+                                    <td>
+                                        <button
+                                            onClick={() =>
+                                                handleUpdateButtonClick(product.id)
+                                            }
+                                            className="bg-amber-500 text-white px-4 py-2 rounded-lg m-1 hover:bg-amber-600 md:px-2  text-sm sm:text-base transition"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleDeleteProduct(product.id)
+                                            }
+                                            className="bg-red-500 text-white px-2 py-2 rounded-lg hover:bg-red-600 text-sm sm:text-base transition"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </>
     );
 }
