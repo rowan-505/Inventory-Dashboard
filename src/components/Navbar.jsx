@@ -14,7 +14,7 @@ export default function Navbar() {
 "
                 onClick={toggleTheme}
             >
-                Switch to {theme === "light" ? "Dark" : "Light"} Mode
+                {theme === "light" ? "Dark" : "Light"} Mode
             </button>
         </div>
     );
